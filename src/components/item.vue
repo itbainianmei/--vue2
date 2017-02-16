@@ -2,7 +2,7 @@
 	<div id="item">
 		<li>
 		    <div>
-			    <span @click="toggle2">
+			    <span @click="choose">
 			    	<img v-if="model.isSelect" src="../../static/images/selected.png" height="14" width="18" alt="">
 			    	<img v-if="!model.isSelect" src="../../static/images/del.png" height="14" width="18" alt="">
 			    </span>
@@ -28,8 +28,7 @@
 		 data: function () {
 		    return {
 		      open: false,
-		      allSelect:[],
-		      allSelect2:[]
+		      allSelect:[]
 		    }
 		  },
 		  computed: {
@@ -37,8 +36,11 @@
 		      return this.model.children 
 		    }
 		  },
+		  watch:{
+		  	
+		  },
 		  methods: {
-		  	xxx:function(object){
+		  	isChoose:function(object){
 		  		let self = this
 		  		object.isSelect = !object.isSelect
 		    	if (object.children) {
@@ -46,8 +48,8 @@
 		    		object.children.forEach(function(item,index){
 		    			item.isSelect =  object.isSelect
 		    			if(item.children){
-		    				self.xxx(item)  
-		    				return true;
+		    				self.isChoose(item)  
+		    				return true
 		    			}
 		    		})
 			    }else{
@@ -60,24 +62,10 @@
 		        this.open = !this.open
 		      }
 		    },
-		    toggle2:function(){   //选择功能
+		    choose:function(){   //选择功能
 		    	let self = this
 		    	self.model.isSelect = !self.model.isSelect
-			    this.xxx(self.model) 
-			    // self.allSelect=[]
-			   //  if (self.isFolder) {
-			   //  	let len = self.isFolder.length;
-			   //  	self.isFolder.forEach(function(item,index){
-			    		
-			   //  		if (item.isSelect) {
-			   //  			self.allSelect.push(item.isSelect)
-			   //  		}
-			   //  		self.model.isSelect ? len == self.allSelect.length : false
-						// console.log(self.model.isSelect+':'+self.model.name) 
-			   //  	})
-
-			   //  }
-			    
+			    this.isChoose(self.model)
 		    }
 		  }
 	}
