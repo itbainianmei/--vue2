@@ -1,8 +1,8 @@
 <template>
-	<div id="item">
+	<div  >
 		<li>
 		    <div>
-			    <span @click="choose">
+			    <span class="icon-box" @click="choose">
 			    	<img v-if="model.isSelect" src="../../static/images/selected.png" height="14" width="18" alt="">
 			    	<img v-if="!model.isSelect" src="../../static/images/del.png" height="14" width="18" alt="">
 			    </span>
@@ -11,19 +11,19 @@
 		    </div>
 		    <ul v-show="open" v-if="isFolder">
 		      <item
-		        class="item"
-		        v-for="model in model.children"
-		        :model="model">
+		        v-for="item in model.children"
+		        :model="item" :parent="model" @check="check">
 		      </item>
 		    </ul>
-		  </li>
+		</li>
 	</div>
 </template>
 <script>
 	export default {
 		name:'item',
 		props: {
-		    model: Object
+		    model: Object,
+		    parent:Object
 		 },
 		 data: function () {
 		    return {
@@ -33,11 +33,8 @@
 		  },
 		  computed: {
 		    isFolder: function () {
-		      return this.model.children 
+		      return this.model.children && this.model.children.length
 		    }
-		  },
-		  watch:{
-		  	
 		  },
 		  methods: {
 		  	isChoose:function(object){
@@ -48,7 +45,7 @@
 		    		object.children.forEach(function(item,index){
 		    			item.isSelect =  object.isSelect
 		    			if(item.children){
-		    				self.isChoose(item)  
+		    				self.isChoose(item)    
 		    				return true
 		    			}
 		    		})
@@ -56,6 +53,29 @@
 		  			object.isSelect = !object.isSelect
 			    	return true
 			    }
+		  	},
+		  	check:function(){
+		  		let self = this
+		  		if (this.parent) { 
+			    	var flag = this.parent.children.some((value,i) => {
+			    		return value.isSelect === false
+			    	})
+			    	if (flag) {
+			    		this.parent.isSelect = false
+			    	}else{
+			    		this.parent.isSelect = true
+			    	}
+			    }
+			    this.$emit('check') 
+		  	},
+		  	checkChild:function(data,flag){
+		  		let self = this
+		  		data.children.forEach(function(value,i){
+		  			value.isSelect = flag
+		  			if (value.children && value.children.length) {
+		  				self.checkChild(value,flag)
+		  			}
+		  		})
 		  	},
 		    toggle: function () {   //右侧是否收缩展示
 		      if (this.isFolder) {
@@ -66,6 +86,10 @@
 		    	let self = this
 		    	self.model.isSelect = !self.model.isSelect
 			    this.isChoose(self.model)
+			    self.check()   //子级->父级
+			    // if (self.isFolder) {
+			    // 	self.checkChild(self.model,self.model.isSelect)
+			    // }
 		    }
 		  }
 	}
